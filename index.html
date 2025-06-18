@@ -153,6 +153,7 @@
     .modal button[type=submit] {margin-top:10px;}
     @media(max-width:700px){ .container{padding:12px 1vw 0 1vw;} .card-block{padding:16px 6px 16px 6px;} .logo{width:72px;} .brand{font-size:1.35em;} }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -239,6 +240,11 @@
 </div>
 
     <button class="cta" id="open-form-btn">Өтінім қалдыру</button>
+    <button class="cta" id="qr-btn" style="margin-left:12px;">QR</button>
+    <div id="qr-container" style="display:none;margin-top:15px;text-align:center;">
+      <canvas id="qr-canvas" style="max-width:100%;"></canvas><br>
+      <a id="qr-download" href="#" download="zholbarys_qr.png" style="color:#ffe27a;margin-top:8px;display:inline-block;">Download</a>
+    </div>
     <div class="quote-blink" id="quote">
       «Тыныштықты сатып алу мүмкін емес, бірақ бізден тапсырыс беруге болады»
     </div>
@@ -292,6 +298,8 @@ const texts = {
     clientsTitle: "Бізге сенім артқандар",
     contactsTitle: "Байланыс",
     cta: "Өтінім қалдыру",
+    qrButton: "QR коды",
+    qrDownload: "Жүктеу",
     form: {
       name: "Атыңыз",
       question: "Сұрағыңыз",
@@ -346,6 +354,8 @@ const texts = {
     clientsTitle: "Нам доверяют",
     contactsTitle: "Контакты",
     cta: "Оставить заявку",
+    qrButton: "QR код сайта",
+    qrDownload: "Скачать",
     form: {
       name: "Имя",
       question: "Ваш вопрос",
@@ -396,6 +406,8 @@ function setLang(l) {
   document.getElementById('clients-title').textContent = texts[lang].clientsTitle;
   document.getElementById('contacts-title').textContent = texts[lang].contactsTitle;
   document.getElementById('open-form-btn').textContent = texts[lang].cta;
+  document.getElementById('qr-btn').textContent = texts[lang].qrButton;
+  document.getElementById('qr-download').textContent = texts[lang].qrDownload;
   document.getElementById('quote').textContent = texts[lang].quote;
   document.getElementById('label-name').textContent = texts[lang].form.name;
   document.getElementById('label-question').textContent = texts[lang].form.question;
@@ -447,6 +459,14 @@ document.getElementById('order-form').onsubmit = function(e){
   }
   window.open("https://wa.me/77769999697?text=" + encodeURIComponent(msg), "_blank");
   modalBg.style.display = "none";
+};
+
+// QR code generation
+const qr = new QRious({ element: document.getElementById('qr-canvas'), size: 200 });
+document.getElementById('qr-btn').onclick = () => {
+  qr.value = location.href;
+  document.getElementById('qr-container').style.display = 'block';
+  document.getElementById('qr-download').href = qr.toDataURL('image/png');
 };
 
 // Плавное появление блоков при прокрутке
