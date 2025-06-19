@@ -151,11 +151,6 @@
     .modal-close { position:absolute; top:11px; right:15px; font-size:1.52em; color:#fff; background:none; border:none; cursor:pointer; opacity:.82; transition:.2s;}
     .modal-close:hover { color:var(--main-gold); opacity:1;}
     .modal button[type=submit] {margin-top:10px;}
-    /* QR modal */
-    .qr-bg {display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(25,25,25,0.91); z-index:999; align-items:center; justify-content:center; animation:fadeIn .35s;}
-    .qr-modal { background:#24221a; border-radius:19px; padding:26px 22px 22px 22px; width:100%; max-width:360px; box-shadow:0 7px 38px #0007; position:relative; text-align:center; animation:fadeIn .45s;}
-    .qr-modal img { width:240px; height:240px; }
-    .qr-download { margin-top:15px; display:inline-block; background:var(--main-gold); color:var(--main-dark); padding:10px 18px; border-radius:9px; font-weight:700; text-decoration:none; }
     @media(max-width:700px){ .container{padding:12px 1vw 0 1vw;} .card-block{padding:16px 6px 16px 6px;} .logo{width:72px;} .brand{font-size:1.35em;} }
   </style>
 </head>
@@ -270,14 +265,6 @@
   </div>
 </div>
 
-<!-- QR Modal -->
-<div class="qr-bg" id="qr-bg">
-  <div class="qr-modal" id="qr-modal">
-    <button class="modal-close" id="close-qr" title="Жабу">&times;</button>
-    <img id="qr-image" alt="QR code">
-    <a id="qr-download" class="qr-download" href="" download="qr.png">Download</a>
-  </div>
-</div>
 
 <div class="footer" id="copyright">&copy; 2007-2024 ТОО "ЖолБарыс Секьюрити". Барлық құқықтар қорғалған.</div>
 
@@ -308,7 +295,6 @@ const texts = {
     contactsTitle: "Байланыс",
     cta: "Өтінім қалдыру",
     qrButton: "QR код",
-    qrDownload: "Жүктеп алу",
     form: {
       name: "Атыңыз",
       question: "Сұрағыңыз",
@@ -364,7 +350,6 @@ const texts = {
     contactsTitle: "Контакты",
     cta: "Оставить заявку",
     qrButton: "QR код",
-    qrDownload: "Скачать",
     form: {
       name: "Имя",
       question: "Ваш вопрос",
@@ -422,7 +407,6 @@ function setLang(l) {
   document.getElementById('name').placeholder = texts[lang].form.name;
   document.getElementById('question').placeholder = texts[lang].form.question;
   document.getElementById('form-send').textContent = texts[lang].form.send;
-  document.getElementById('qr-download').textContent = texts[lang].qrDownload;
   document.getElementById('copyright').innerHTML = texts[lang].copyright;
   document.getElementById('faq-title').textContent = texts[lang].faqTitle + " | " + (lang === "kk" ? "Частые вопросы" : "Cұрақ-жауап");
   renderFAQ();
@@ -455,19 +439,14 @@ document.getElementById('open-form-btn').onclick = () => { modalBg.style.display
 document.getElementById('close-modal').onclick = () => { modalBg.style.display = "none"; }
 modalBg.onclick = function(e){ if(e.target===modalBg) modalBg.style.display="none"; };
 
-// QR modal
-const qrBg = document.getElementById('qr-bg');
-const qrImg = document.getElementById('qr-image');
-const qrDownload = document.getElementById('qr-download');
+// QR code
 document.getElementById('qr-open-btn').onclick = () => {
-  const url = window.location.href.split('#')[0];
-  const src = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' + encodeURIComponent(url);
-  qrImg.src = src;
-  qrDownload.href = src;
-  qrBg.style.display = 'flex';
+  const url = 'https://alibek0301.github.io/zholbarys/';
+  const src =
+    'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' +
+    encodeURIComponent(url);
+  window.open(src, '_blank');
 };
-document.getElementById('close-qr').onclick = () => { qrBg.style.display = 'none'; };
-qrBg.onclick = function(e){ if(e.target===qrBg) qrBg.style.display='none'; };
 
 // Отправка формы в WhatsApp
 document.getElementById('order-form').onsubmit = function(e){
