@@ -156,6 +156,8 @@
     .qr-modal { background:#24221a; border-radius:19px; padding:26px 22px 22px 22px; width:100%; max-width:360px; box-shadow:0 7px 38px #0007; position:relative; text-align:center; animation:fadeIn .45s;}
     .qr-modal img { width:240px; height:240px; }
     .qr-download { margin-top:15px; display:inline-block; background:var(--main-gold); color:var(--main-dark); padding:10px 18px; border-radius:9px; font-weight:700; text-decoration:none; }
+    .qr-inline {text-align:center; margin:40px 0;}
+    .qr-inline img {width:180px; height:180px;}
     @media(max-width:700px){ .container{padding:12px 1vw 0 1vw;} .card-block{padding:16px 6px 16px 6px;} .logo{width:72px;} .brand{font-size:1.35em;} }
   </style>
 </head>
@@ -254,6 +256,12 @@
     <div class="faq-title" id="faq-title">Cұрақ-жауап | Частые вопросы</div>
     <ul class="faq-list" id="faq-list"></ul>
   </div>
+</div>
+
+<!-- QR code at bottom -->
+<div class="qr-inline scroll-in">
+  <img id="qr-image-inline" alt="QR code">
+  <a id="qr-download-inline" class="qr-download" href="" download="qr.png">Download</a>
 </div>
 
 <!-- Модальное окно формы -->
@@ -423,6 +431,7 @@ function setLang(l) {
   document.getElementById('question').placeholder = texts[lang].form.question;
   document.getElementById('form-send').textContent = texts[lang].form.send;
   document.getElementById('qr-download').textContent = texts[lang].qrDownload;
+  document.getElementById('qr-download-inline').textContent = texts[lang].qrDownload;
   document.getElementById('copyright').innerHTML = texts[lang].copyright;
   document.getElementById('faq-title').textContent = texts[lang].faqTitle + " | " + (lang === "kk" ? "Частые вопросы" : "Cұрақ-жауап");
   renderFAQ();
@@ -459,12 +468,16 @@ modalBg.onclick = function(e){ if(e.target===modalBg) modalBg.style.display="non
 const qrBg = document.getElementById('qr-bg');
 const qrImg = document.getElementById('qr-image');
 const qrDownload = document.getElementById('qr-download');
+const qrImgInline = document.getElementById('qr-image-inline');
+const qrDownloadInline = document.getElementById('qr-download-inline');
 const qrUrl = 'https://alibek0301.github.io/zholbarys/';
 const qrSrc =
   'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' +
   encodeURIComponent(qrUrl);
 qrImg.src = qrSrc;
 qrDownload.href = qrSrc;
+if(qrImgInline) qrImgInline.src = qrSrc;
+if(qrDownloadInline) qrDownloadInline.href = qrSrc;
 document.getElementById('qr-open-btn').onclick = () => {
   qrBg.style.display = 'flex';
 };
