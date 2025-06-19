@@ -459,13 +459,13 @@ modalBg.onclick = function(e){ if(e.target===modalBg) modalBg.style.display="non
 const qrBg = document.getElementById('qr-bg');
 const qrImg = document.getElementById('qr-image');
 const qrDownload = document.getElementById('qr-download');
+const qrUrl = 'https://alibek0301.github.io/zholbarys/';
+const qrSrc =
+  'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' +
+  encodeURIComponent(qrUrl);
+qrImg.src = qrSrc;
+qrDownload.href = qrSrc;
 document.getElementById('qr-open-btn').onclick = () => {
-  const url = 'https://alibek0301.github.io/zholbarys/';
-  const src =
-    'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' +
-    encodeURIComponent(url);
-  qrImg.src = src;
-  qrDownload.href = src;
   qrBg.style.display = 'flex';
 };
 document.getElementById('close-qr').onclick = () => { qrBg.style.display = 'none'; };
