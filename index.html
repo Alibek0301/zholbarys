@@ -74,6 +74,7 @@
     .lang button { background:none; border:none; color:var(--main-gold); font-weight:700; font-size:1em; padding:4px 15px; border-radius:7px; cursor:pointer; transition:.13s; outline:none;}
     .lang button.active, .lang button:hover { background:var(--main-gold); color:var(--main-dark);}
     /* СИММЕТРИЧНЫЕ КАРТОЧКИ */
+    .scroll-in{opacity:0.38;transition:.4s;}
     .card-block {
       background: var(--card-bg);
       border-radius: 22px;
@@ -160,7 +161,7 @@
     <div class="logo-wrap">
       <img src="logo_zholbarys_transparent.png" alt="Zholbarys Security logo" class="logo" loading="lazy">
     </div>
-    <div class="brand" id="main-title">ЖолБарыс Секьюрити</div>
+    <h1 class="brand" id="main-title">ЖолБарыс Секьюрити</h1>
     <div class="subtitle" id="main-tagline">Сенім. Кәсібилік. 2007 жылдан бері</div>
     <div class="lang">
       <button id="kk-btn" class="active">KZ</button>
@@ -384,6 +385,7 @@ const texts = {
 let lang = "kk";
 function setLang(l) {
   lang = l;
+  localStorage.setItem("lang", lang);
   document.getElementById('kk-btn').classList.toggle('active', lang === "kk");
   document.getElementById('ru-btn').classList.toggle('active', lang === "ru");
   document.documentElement.lang = lang;
@@ -408,9 +410,10 @@ function setLang(l) {
   document.getElementById('faq-title').textContent = texts[lang].faqTitle + " | " + (lang === "kk" ? "Частые вопросы" : "Cұрақ-жауап");
   renderFAQ();
 }
-document.getElementById('kk-btn').onclick = ()=>setLang('kk');
-document.getElementById('ru-btn').onclick = ()=>setLang('ru');
-setLang('kk');
+document.getElementById("kk-btn").onclick = () => setLang("kk");
+document.getElementById("ru-btn").onclick = () => setLang("ru");
+const savedLang = localStorage.getItem("lang");
+setLang(savedLang ? savedLang : "kk");
 
 // FAQ генерация
 function renderFAQ(){
@@ -451,15 +454,13 @@ document.getElementById('order-form').onsubmit = function(e){
 };
 
 // Плавное появление блоков при прокрутке
-const scrollBlocks = document.querySelectorAll('.scroll-in');
-const onScroll = ()=>{
-  scrollBlocks.forEach(el=>{
-    const rect = el.getBoundingClientRect();
-    if(rect.top < window.innerHeight-60) el.style.opacity = 1;
-    else el.style.opacity = 0.38;
+const scrollBlocks = document.querySelectorAll(".scroll-in");
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    entry.target.style.opacity = entry.isIntersecting ? 1 : 0.38;
   });
-};
-window.addEventListener('scroll', onScroll); onScroll();
+}, { threshold: 0.1 });
+scrollBlocks.forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
