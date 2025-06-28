@@ -233,12 +233,11 @@
   <div class="card-block scroll-in" id="calc-block">
     <div class="section-title" id="calc-title">Расчёт стоимости</div>
     <div class="calc-form">
-      <label for="object-type" id="calc-object-label">Тип объекта</label>
+      <label for="object-type" id="calc-object-label">Тип услуги</label>
       <select id="object-type">
-        <option value="office">Офис/магазин</option>
-        <option value="residential">Жилой комплекс</option>
-        <option value="event">Мероприятие</option>
-      </select>
+          <option value="physical">Физическая охрана</option>
+          <option value="remote">Пультовая охрана</option>
+        </select>
       <label for="post-count" id="calc-posts-label">Кол-во постов</label>
       <input type="number" id="post-count" min="1" value="1">
       <label style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
@@ -334,9 +333,9 @@ const texts = {
       send: "WhatsApp арқылы жіберу"
     },
     calcTitle: "Бағасын есептеу",
-    objectTypes: { office:"Кеңсе/дүкен", residential:"Тұрғын үй", event:"Іс-шара" },
+    objectTypes: { physical:"Физикалық күзет", remote:"Пульттік күзет" },
     calc: {
-      objectLabel: "Нысан түрі",
+      objectLabel: "Қызмет түрі",
       postsLabel: "Посттар саны",
       armedLabel: "Қарумен",
       calcBtn: "Есептеу",
@@ -397,9 +396,9 @@ const texts = {
       send: "Отправить в WhatsApp"
     },
     calcTitle: "Расчёт стоимости",
-    objectTypes: { office:"Офис/магазин", residential:"Жилой комплекс", event:"Мероприятие" },
+    objectTypes: { physical:"Физическая охрана", remote:"Пультовая охрана" },
     calc: {
-      objectLabel: "Тип объекта",
+      objectLabel: "Тип услуги",
       postsLabel: "Количество постов",
       armedLabel: "С оружием",
       calcBtn: "Рассчитать",
@@ -462,9 +461,8 @@ function setLang(l) {
   document.getElementById('calc-posts-label').textContent = texts[lang].calc.postsLabel;
   document.getElementById('calc-armed-label').textContent = texts[lang].calc.armedLabel;
   document.getElementById('calc-btn').textContent = texts[lang].calc.calcBtn;
-  document.querySelector('#object-type option[value="office"]').textContent = texts[lang].objectTypes.office;
-  document.querySelector('#object-type option[value="residential"]').textContent = texts[lang].objectTypes.residential;
-  document.querySelector('#object-type option[value="event"]').textContent = texts[lang].objectTypes.event;
+  document.querySelector('#object-type option[value="physical"]').textContent = texts[lang].objectTypes.physical;
+  document.querySelector('#object-type option[value="remote"]').textContent = texts[lang].objectTypes.remote;
   document.getElementById('calc-result').textContent = '';
   document.getElementById('copyright').innerHTML = texts[lang].copyright;
   document.getElementById('faq-title').textContent = texts[lang].faqTitle + " | " + (lang === "kk" ? "Частые вопросы" : "Cұрақ-жауап");
@@ -474,6 +472,11 @@ document.getElementById("kk-btn").onclick = () => setLang("kk");
 document.getElementById("ru-btn").onclick = () => setLang("ru");
 const savedLang = localStorage.getItem("lang");
 setLang(savedLang ? savedLang : "kk");
+document.getElementById("object-type").onchange = () => {
+  const show = document.getElementById("object-type").value === "physical";
+  document.getElementById("armed").parentElement.style.display = show ? "flex" : "none";
+};
+document.getElementById("object-type").dispatchEvent(new Event("change"));
 
 // FAQ генерация
 function renderFAQ(){
@@ -514,15 +517,19 @@ document.getElementById('order-form').onsubmit = function(e){
 };
 
 // Калькулятор стоимости
-const rates = { office: 100000, residential: 80000, event: 120000 };
-document.getElementById('calc-btn').onclick = function(){
-  const type = document.getElementById('object-type').value;
-  let posts = parseInt(document.getElementById('post-count').value) || 1;
+const rates = { physical: 800, remote: 700 };
+document.getElementById("calc-btn").onclick = function(){
+  const type = document.getElementById("object-type").value;
+  let posts = parseInt(document.getElementById("post-count").value) || 1;
   if(posts < 1) posts = 1;
-  const armed = document.getElementById('armed').checked;
-  let cost = rates[type] * posts * (armed ? 1.25 : 1);
-  document.getElementById('calc-result').textContent =
-    texts[lang].calc.result + Math.round(cost).toLocaleString('ru-RU') + ' ₸/мес';
+  const armed = document.getElementById("armed").checked;
+  let cost;
+  if(type === "physical"){
+    cost = posts * (armed ? 1100 : 800);
+  } else {
+    cost = posts * rates[type];
+  }
+  document.getElementById("calc-result").textContent = texts[lang].calc.result + Math.round(cost).toLocaleString("ru-RU") + " ₸/час";
 };
 
 // Плавное появление блоков при прокрутке
