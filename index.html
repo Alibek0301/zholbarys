@@ -143,6 +143,19 @@
     }
     .faq-q.open+.faq-a {display:block;}
     .footer { text-align:center; color:#bbb; font-size:.97em; margin:36px 0 14px 0;}
+
+    /* Калькулятор стоимости */
+    .calc-form select,
+    .calc-form input[type=number] {
+      width:100%; padding:12px; margin:8px 0 18px 0; border-radius:7px;
+      border:none; font-size:1em; background:#161512; color:#ffe27a;
+      font-family:'Montserrat',sans-serif; font-weight:500; outline:none;
+      border:1.2px solid #2d291e; box-sizing:border-box; transition:.15s;
+    }
+    .calc-form input[type=number]:focus,
+    .calc-form select:focus { border:1.2px solid #ffe27a; background:#24221a; }
+    .calc-result {margin-top:12px; font-weight:700; color:#fff;}
+
     /* Модальное окно формы */
     .modal-bg {display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(25,25,25,0.91); z-index:999; align-items:center; justify-content:center; animation:fadeIn .35s;}
     .modal { background:#24221a; border-radius:19px; padding:32px 22px 16px 22px; width:100%; max-width:360px; box-shadow:0 7px 38px #0007; position:relative; animation:fadeIn .45s;}
@@ -214,6 +227,26 @@
         <div class="carousel-item">Коттеджные посёлки</div>
         <div class="carousel-item">Акиматы</div>
       </div>
+    </div>
+  </div>
+
+  <div class="card-block scroll-in" id="calc-block">
+    <div class="section-title" id="calc-title">Расчёт стоимости</div>
+    <div class="calc-form">
+      <label for="object-type" id="calc-object-label">Тип объекта</label>
+      <select id="object-type">
+        <option value="office">Офис/магазин</option>
+        <option value="residential">Жилой комплекс</option>
+        <option value="event">Мероприятие</option>
+      </select>
+      <label for="post-count" id="calc-posts-label">Кол-во постов</label>
+      <input type="number" id="post-count" min="1" value="1">
+      <label style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
+        <input type="checkbox" id="armed">
+        <span id="calc-armed-label">С оружием</span>
+      </label>
+      <button type="button" class="cta" id="calc-btn">Рассчитать</button>
+      <div class="calc-result" id="calc-result"></div>
     </div>
   </div>
 
@@ -300,6 +333,15 @@ const texts = {
       question: "Сұрағыңыз",
       send: "WhatsApp арқылы жіберу"
     },
+    calcTitle: "Бағасын есептеу",
+    objectTypes: { office:"Кеңсе/дүкен", residential:"Тұрғын үй", event:"Іс-шара" },
+    calc: {
+      objectLabel: "Нысан түрі",
+      postsLabel: "Посттар саны",
+      armedLabel: "Қарумен",
+      calcBtn: "Есептеу",
+      result: "Шамаменгі баға: "
+    },
     quote: "«Тыныштықты сатып алу мүмкін емес, бірақ бізден тапсырыс беруге болады»",
     copyright: "&copy; 2007-2024 ТОО \"ЖолБарыс Секьюрити\". Барлық құқықтар қорғалған.",
     faqTitle: "Cұрақ-жауап",
@@ -354,6 +396,15 @@ const texts = {
       question: "Ваш вопрос",
       send: "Отправить в WhatsApp"
     },
+    calcTitle: "Расчёт стоимости",
+    objectTypes: { office:"Офис/магазин", residential:"Жилой комплекс", event:"Мероприятие" },
+    calc: {
+      objectLabel: "Тип объекта",
+      postsLabel: "Количество постов",
+      armedLabel: "С оружием",
+      calcBtn: "Рассчитать",
+      result: "Примерная стоимость: "
+    },
     quote: "«Спокойствие нельзя купить, но можно заказать у нас»",
     copyright: "&copy; 2007-2024 ТОО \"ЖолБарыс Секьюрити\". Все права защищены.",
     faqTitle: "Частые вопросы",
@@ -406,6 +457,15 @@ function setLang(l) {
   document.getElementById('name').placeholder = texts[lang].form.name;
   document.getElementById('question').placeholder = texts[lang].form.question;
   document.getElementById('form-send').textContent = texts[lang].form.send;
+  document.getElementById('calc-title').textContent = texts[lang].calcTitle;
+  document.getElementById('calc-object-label').textContent = texts[lang].calc.objectLabel;
+  document.getElementById('calc-posts-label').textContent = texts[lang].calc.postsLabel;
+  document.getElementById('calc-armed-label').textContent = texts[lang].calc.armedLabel;
+  document.getElementById('calc-btn').textContent = texts[lang].calc.calcBtn;
+  document.querySelector('#object-type option[value="office"]').textContent = texts[lang].objectTypes.office;
+  document.querySelector('#object-type option[value="residential"]').textContent = texts[lang].objectTypes.residential;
+  document.querySelector('#object-type option[value="event"]').textContent = texts[lang].objectTypes.event;
+  document.getElementById('calc-result').textContent = '';
   document.getElementById('copyright').innerHTML = texts[lang].copyright;
   document.getElementById('faq-title').textContent = texts[lang].faqTitle + " | " + (lang === "kk" ? "Частые вопросы" : "Cұрақ-жауап");
   renderFAQ();
@@ -451,6 +511,18 @@ document.getElementById('order-form').onsubmit = function(e){
   }
   window.open("https://wa.me/77769999697?text=" + encodeURIComponent(msg), "_blank");
   modalBg.style.display = "none";
+};
+
+// Калькулятор стоимости
+const rates = { office: 100000, residential: 80000, event: 120000 };
+document.getElementById('calc-btn').onclick = function(){
+  const type = document.getElementById('object-type').value;
+  let posts = parseInt(document.getElementById('post-count').value) || 1;
+  if(posts < 1) posts = 1;
+  const armed = document.getElementById('armed').checked;
+  let cost = rates[type] * posts * (armed ? 1.25 : 1);
+  document.getElementById('calc-result').textContent =
+    texts[lang].calc.result + Math.round(cost).toLocaleString('ru-RU') + ' ₸/мес';
 };
 
 // Плавное появление блоков при прокрутке
